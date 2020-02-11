@@ -12,27 +12,41 @@
 */
 
 use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\CategriaController;
+use App\Http\Controllers\CategoriaController;
 
 
-Route::get('/', 'ProductoController@index');
+Route::get('/', 'ProductoController@listado');
+
+Route::group(['prefix' => 'admin'], function () {
+
+    // admin Producto
+    Route::get('producto/{id}', 'ProductoController@show');
+    Route::get('productos', 'ProductoController@index');
+    Route::post('agregarProducto', 'ProductoController@store');
+    Route::post('actualizarProducto', 'ProductoController@update');
+    Route::delete('eliminarProducto/{id}', 'ProductoController@destroy');
+    Route::get('productoPorId/{id}', 'ProductoController@productoPorId');
 
 
-//Pizza
-Route::get('producto/{id}', 'ProductoController@show');
-Route::get('productos', 'ProductoController@index');
-Route::post('agregarProducto', 'ProductoController@store');
-Route::post('actualizarProducto', 'ProductoController@update');
-Route::delete('eliminarProducto/{id}', 'ProductoController@destroy');
-Route::get('productoPorId/{id}', 'ProductoController@productoPorId');
+    //  admin Categoria
+    Route::get('categoria/{id}', 'CategoriaController@show');
+    Route::get('categorias', 'CategoriaController@index');
+    Route::post('agregarCategoria', 'CategoriaController@store');
+    Route::post('actualizarCategoria', 'CategoriaController@update');
+    Route::delete('eliminarCategoria/{id}', 'CategoriaController@destroy');
+    Route::get('buscarCategoria/{nombre}', 'CategoriaController@search');
+    Route::get('categoriaPorId/{id}', 'CategoriaController@categoriaPorId');
 
+});
 
+Route::group(['prefix' => 'front'], function () {
 
-//Ingredient
-Route::get('categoria/{id}', 'CategriaController@show');
-Route::get('categorias', 'CategriaController@index');
-Route::post('agregarCategoria', 'CategriaController@store');
-Route::post('actualizarCategoria', 'CategriaController@update');
-Route::delete('eliminarCategoria/{id}', 'CategriaController@destroy');
-Route::get('buscarCategoria/{nombre}', 'CategriaController@search');
-Route::get('categoriaPorId/{id}', 'CategriaController@categoriaPorId');
+    //front producto
+    Route::get('productos', 'ProductoController@listado');
+    Route::get('producto/{id}', 'ProductoController@detalle');
+
+    //front categoria
+    Route::get('categorias', 'CategoriaController@listado');
+    Route::get('categoria/{id}', 'CategoriaController@detalle');
+
+});
