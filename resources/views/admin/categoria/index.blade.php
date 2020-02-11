@@ -100,7 +100,7 @@
                     <div class="row">
                         <div class="form-group col-md-10">
                             <label for="Description">Decripcion:</label>
-                            <input type="text" class="form-control" name="descripcion" maxlength="10" id="descripcion">
+                            <input type="text" class="form-control" name="descripcion" maxlength="50" id="descripcion">
                         </div>
                     </div>
 
@@ -173,7 +173,7 @@
                                 jQuery('.alert-danger').html('');
                                 jQuery('.alert-danger').show();
                                 jQuery('.alert-danger').append('<li>'+obj.value+'</li>');
-                                });
+
                             }
                             else
                             {
@@ -194,7 +194,7 @@
                         }
                     });
                     jQuery.ajax({
-                        url: jQuery('#id').val()?"{{ url('/admin/actualizarCategoria') }}":"{{ url('/admin/agregarCategoria') }}",
+                        url: jQuery('#id').val()?"{{url('/admin/actualizarCategoria')}}":"{{url('/admin/agregarCategoria')}}",
                         method: 'post',
                         data: {
                             id: jQuery('#id').val()?jQuery('#id').val():0,
@@ -202,9 +202,7 @@
                             _token: jQuery('[name="_token"]').val(),
                         },
                         success: function(result){
-
                             var obj = jQuery.parseJSON( result );
-
                             if(obj.error)
                             {
                                 jQuery('.alert-danger').html('');

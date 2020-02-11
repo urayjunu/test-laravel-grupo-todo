@@ -17,8 +17,8 @@ class CreateProductoCategoriasTable extends Migration
             $table->bigIncrements('id');
             $table->integer('id_producto');
             $table->integer('id_categoria');
-            $table->timestamp('updated_at');
-            $table->timestamp('created_at');
+            $table->timestamp('updated_at')->useCurrent();
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 

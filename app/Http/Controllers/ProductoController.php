@@ -70,6 +70,7 @@ class ProductoController extends Controller
         $rules = array(
             'nombre'        => 'required|min:3|max:50',
             'categorias'   => 'required',
+            'descripcion'   => 'min:5|max:150',
         );
 
         $validator = Validator::make($request->all(), $rules);
