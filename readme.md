@@ -4,8 +4,9 @@ composer install --prefer-dist
 
 sudo chmod -R 777 storage/ bootstrap/ database/migrations/
 
-
 configure database in file .env
+
+php artisan key:generate
 
 php artisan migrate
 

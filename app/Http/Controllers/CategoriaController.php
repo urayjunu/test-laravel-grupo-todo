@@ -86,7 +86,7 @@ class CategoriaController extends Controller
 
             try {
                 // update categoria
-                Categoria::where('id', $request->id)->update(['nombre' => $request->nombre]);
+                Categoria::where('id', $request->id)->update(['nombre' => $request->nombre, 'descripcion' => $request->descripcion]);
             } catch (Exception $e) {
                 return json_encode(array("error" => 1, "msg" => $e->getMessage()));
             }

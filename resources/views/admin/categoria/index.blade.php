@@ -99,7 +99,7 @@
                     </div>
                     <div class="row">
                         <div class="form-group col-md-10">
-                            <label for="Description">Decripcion:</label>
+                            <label for="Description">Descripcion:</label>
                             <input type="text" class="form-control" name="descripcion" maxlength="50" id="descripcion">
                         </div>
                     </div>
@@ -179,6 +179,7 @@
                             {
                                 jQuery('#id').val(obj.categoria.id);
                                 jQuery('#nombre').val(obj.categoria.nombre);
+                                jQuery('#descripcion').val(obj.categoria.descripcion);
                                 $('#myModal').modal('show');
                             }
                         }
@@ -199,6 +200,7 @@
                         data: {
                             id: jQuery('#id').val()?jQuery('#id').val():0,
                             nombre: jQuery('#nombre').val(),
+                            descripcion: jQuery('#descripcion').val(),
                             _token: jQuery('[name="_token"]').val(),
                         },
                         success: function(result){
@@ -217,6 +219,7 @@
                                 $('#myModal').modal('hide');
                                 jQuery('#id').val();
                                 jQuery('#nombre').val();
+                                jQuery('#descripcion').val();
                                 location.reload();
                             }
                         }
