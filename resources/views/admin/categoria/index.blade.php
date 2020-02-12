@@ -1,9 +1,9 @@
-  @include('admin.layouts.head')
+  @include('admin.layouts.head_admin')
 
         <body>
         <div class="flex-center position-ref full-height">
             <div class="top-right links">
-                 @include('admin.layouts.menu')
+                 @include('admin.layouts.menu_admin')
             </div>
             <div class="content">
                 <div class="title m-b-md">
@@ -225,4 +225,4 @@
 
             });
         </script>
-    @include('admin.layouts.footer')
+    @include('admin.layouts.footer_admin')

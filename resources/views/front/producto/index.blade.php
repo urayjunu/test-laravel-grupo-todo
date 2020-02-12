@@ -1,8 +1,8 @@
-  @include('front.layouts.head')
+  @include('front.layouts.head_front')
     <body>
         <div class="flex-center position-ref full-height">
             <div class="top-right links">
-                @include('front.layouts.menu')
+                @include('front.layouts.menu_front')
             </div>
 
             <div class="content menu-categorias">
@@ -77,4 +77,4 @@
                 </div>
             </div>
         </div>
-    @include('front.layouts.footer')
+    @include('front.layouts.footer_front')
