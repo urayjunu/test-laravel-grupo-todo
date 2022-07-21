@@ -24,7 +24,6 @@ Route::group(['prefix' => 'front'], function () {
     Route::get('productos/{id}', 'ProductoController@list');
     Route::get('producto/{id}', 'ProductoController@detalle');
 
-
     //front categoria
     Route::get('categorias', 'CategoriaController@listado');
     Route::get('categoria/{id}', 'CategoriaController@detalle');

@@ -66,7 +66,7 @@ class ProductoController extends Controller
              $cate = $categoria_->nombre .'/'. $categorias_producto->nombre; 
         }
         
-//dd($cate);
+
        
         /*
         $categorias = [];

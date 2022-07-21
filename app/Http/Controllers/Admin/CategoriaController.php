@@ -44,10 +44,10 @@ class CategoriaController extends Controller
     public function store(Request $request)
     {
         $rules = array(
-            'nombre'   => 'required|min:5|max:50',
-            'descripcion'   => 'min:5|max:150',
+            'nombre'   => 'required|min:3jmn|max:50',
+            'descripcion'   => 'min:2|max:150',
         );
-
+//dd($request);
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -55,18 +55,37 @@ class CategoriaController extends Controller
         } else {
             try {
                 // store categoria
-                $categoria = new Categoria;
+                $categoria = new Categoria();
                 $categoria->nombre      = $request->nombre;
                 $categoria->descripcion = $request->descripcion;
-                $categoria->subcategoria_id = $request->categorias;
+                $categoria->subcategoria_id = $request->categ;
                 $categoria->save();
 
             } catch (Exception $e) {
-                return json_encode(array("error" => 1, "msg" => $e->getMessage()));
+                return json_encode(array("error" => 100, "msg" => $e->getMessage()));
             }
 
             return json_encode(array('success' => true, "error" => 0, "msg" => "OK"));
         }
+    }
+    
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+
+        try {
+            $categoria = Categoria::findOrFail($id);
+
+            } catch (ModelNotFoundException $exception) {
+                return back()->withError($exception->getMessage("El valor no es correcto"))->withInput();
+            }
+       
+        return view('admin.categoria.detail', ['categoria' => $categoria]);
     }
 
 
@@ -87,14 +106,14 @@ class CategoriaController extends Controller
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return json_encode(array("error" => 1, "msg" => "Error al guardar"));
+            return json_encode(array("error" => 103, "msg" => "Error al guardar"));
         } else {
 
             try {
                 // update categoria
                 Categoria::where('id', $request->id)->update(['nombre' => $request->nombre, 'descripcion' => $request->descripcion]);
             } catch (Exception $e) {
-                return json_encode(array("error" => 1, "msg" => $e->getMessage()));
+                return json_encode(array("error" => 102, "msg" => $e->getMessage()));
             }
 
             return json_encode(array('success' => true, "error" => 0, "msg" => "OK"));

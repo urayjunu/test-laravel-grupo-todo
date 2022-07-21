@@ -33,7 +33,7 @@
                                     </div>
                                 </div>
                             </div>
-                           <a href="javascript:history.back()">Volve a listado de productos</a>
+                           <a href="javascript:history.back()">Volver al listado de productos</a>
                 </div>
             </div>
         </div>

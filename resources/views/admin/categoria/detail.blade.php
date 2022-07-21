@@ -1,4 +1,7 @@
-@include('admin.layouts.head_admin')
+@extends('layouts.app')
+@section('content')
+
+ 
     <body>
         <div class="flex-center position-ref full-height">
             <div class="top-right links">
@@ -7,7 +10,7 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    {{ $producto->nombre }}
+                    {{ $categoria->nombre }}
                 </div>
                 <div class="links">
                     @if ($errors->any())
@@ -27,15 +30,15 @@
                     <div class="portlet box blue">
                         <div class="portlet-body">
                             <div class="table-responsive">
-                                    <label>Producto: {{ $producto->nombre }} </label><br>
-                                    <label>Categoria: {{ $producto->categorias }} </label>
+                                    <label>Categoria: {{ $categoria->nombre }} </label><br>
+                                   
                                     <br>
-                                    <textarea cols="30" rows="4" disabled="" >{{ $producto->descripcion }}</textarea>
+                                    <textarea cols="30" rows="4" disabled="" >{{ $categoria->descripcion }}</textarea>
                             </div>
                         </div>
                     </div>
-                    <a href="javascript:history.back()">Volver</a>
+                     <a href="javascript:history.back()">Volver</a>
                 </div>
             </div>
         </div>
-    @include('admin.layouts.footer_admin')
+@endsection

@@ -15,6 +15,7 @@ class CreateProductosTable extends Migration
     {
         Schema::create('productos', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('categoria_id');
             $table->string('nombre');
             $table->string('descripcion')->nullable();
             $table->timestamp('updated_at')->useCurrent();

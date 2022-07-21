@@ -15,11 +15,27 @@ class CreateCategoriasTable extends Migration
     {
         Schema::create('categorias', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('subcategoria_id');
             $table->string('nombre');
             $table->string('descripcion')->nullable();
             $table->timestamp('updated_at')->useCurrent();
             $table->timestamp('created_at')->useCurrent();
         });
+
+        DB::table("categorias")
+            ->insert([
+                "subcategoria_id" => 0,
+                "nombre" => "Autos",
+                "descripcion" => "Autos 0 km"
+               
+                ],[
+                "subcategoria_id" => 0,
+                "nombre" => "Motos",
+                "descripcion" => "Motos 0 km"
+               
+                ]
+
+            );
     }
 
     /**
