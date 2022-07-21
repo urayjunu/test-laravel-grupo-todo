@@ -17,8 +17,24 @@ use App\Http\Controllers\CategoriaController;
 
 Route::get('/', 'ProductoController@listado');
 
-Route::group(['prefix' => 'admin'], function () {
+Route::group(['prefix' => 'front'], function () {
 
+    //front producto
+    Route::get('productos', 'ProductoController@listado');
+    Route::get('productos/{id}', 'ProductoController@list');
+    Route::get('producto/{id}', 'ProductoController@detalle');
+
+
+    //front categoria
+    Route::get('categorias', 'CategoriaController@listado');
+    Route::get('categoria/{id}', 'CategoriaController@detalle');
+
+});
+
+Auth::routes();
+
+//Route::group(['prefix' => 'admin'], function () {
+Route::middleware(['auth','admin'])->prefix('admin')->namespace('Admin')->group(function () {
     // admin Producto
     Route::get('producto/{id}', 'ProductoController@show');
     Route::get('productos', 'ProductoController@index');
@@ -26,7 +42,6 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('actualizarProducto', 'ProductoController@update');
     Route::delete('eliminarProducto/{id}', 'ProductoController@destroy');
     Route::get('productoPorId/{id}', 'ProductoController@productoPorId');
-
 
     //  admin Categoria
     Route::get('categoria/{id}', 'CategoriaController@show');
@@ -38,15 +53,4 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('categoriaPorId/{id}', 'CategoriaController@categoriaPorId');
 
 });
-
-Route::group(['prefix' => 'front'], function () {
-
-    //front producto
-    Route::get('productos', 'ProductoController@listado');
-    Route::get('producto/{id}', 'ProductoController@detalle');
-
-    //front categoria
-    Route::get('categorias', 'CategoriaController@listado');
-    Route::get('categoria/{id}', 'CategoriaController@detalle');
-
-});
+Route::get('/home', 'HomeController@index')->name('home');

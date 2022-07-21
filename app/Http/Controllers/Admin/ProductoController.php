@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+//use Illuminate\Http\Request;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Response;
 use Exception;
@@ -13,15 +15,26 @@ use App\ProductoCategoria;
 use App\Categoria;
 
 
+
 class ProductoController extends Controller
-{
-
+{     
+    
     public function index()
-    {
+    {	 
         $productos = Producto::all();
-        $categorias = Categoria::all();
+       // $categorias = Categoria::all();
+        $categorias = Categoria::select(
+                    'id', 'subcategoria_id','nombre')
+                ->where('subcategoria_id','=',0)                    
+                ->orderBy('nombre')
+                ->get();
+       
+        $categorias_ = Categoria::select(
+                    'id', 'subcategoria_id','nombre')
+                ->orderBy('nombre')
+                ->get();
 
-        return view('admin.producto.index', ['productos' => $productos, 'categorias' => $categorias]);
+        return view('admin.producto.index', ['productos' => $productos, 'categorias' => $categorias,'categorias_' => $categorias_]);
     }
 
     /**
@@ -35,12 +48,50 @@ class ProductoController extends Controller
 
         try {
             $producto = Producto::findOrFail($id);
+            $categorias_producto = Categoria::where('id', $producto->categoria_id)
+                                   ->first();
+            //dd($categorias_producto);
+
+        } catch (ModelNotFoundException $exception) {
+            return back()->withError($exception->getMessage("El valor no es correcto"))->withInput();
+        }
+
+       // $categorias_producto
+        if($categorias_producto->subcategoria_id == 0){
+            $cate = $categorias_producto->nombre;
+           
+        }else{
+             $categoria_ = Categoria::where('id', $categorias_producto->subcategoria_id)
+             ->first();
+             $cate = $categoria_->nombre .'/'. $categorias_producto->nombre; 
+        }
+        
+//dd($cate);
+       
+        /*
+        $categorias = [];
+        foreach ($categorias_producto as $key => $categoria_producto) {
+            $categoria = Categoria::find($categoria_producto->id_categoria);
+            $categorias[$key]['nombre'] = $categoria['nombre'];
+        }*/
+        $producto->categorias = $cate;
+
+        return view('admin.producto.detail', ['producto' => $producto]);
+    }
+    /*public function show($id)
+    {
+
+        try {
+            $producto = Producto::findOrFail($id);
             $categorias_producto = ProductoCategoria::where('id_producto', $id)->get();
 
         } catch (ModelNotFoundException $exception) {
             return back()->withError($exception->getMessage("El valor no es correcto"))->withInput();
         }
 
+        dd($producto);
+
+        
         $categorias = [];
         foreach ($categorias_producto as $key => $categoria_producto) {
             $categoria = Categoria::find($categoria_producto->id_categoria);
@@ -50,7 +101,7 @@ class ProductoController extends Controller
         $producto->categorias = $categorias;
 
         return view('admin.producto.detail', ['producto' => $producto]);
-    }
+    }*/
 
     public function productoPorId($id)
     {
@@ -72,7 +123,7 @@ class ProductoController extends Controller
             'categorias'   => 'required',
             'descripcion'   => 'min:5|max:150',
         );
-    
+
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -80,24 +131,18 @@ class ProductoController extends Controller
         } else {
 
             try {
-
                 // store producto
                 $producto = new Producto;
                 $producto->nombre       = $request->nombre;
+                $producto->categoria_id = $request->categorias;
                 $producto->descripcion  = $request->descripcion;
                 $producto->save();
-
-                foreach ($request->categorias as $categoriaId)  {
-                    $categoria_producto = new ProductoCategoria;
-                    $categoria_producto->id_producto    = $producto->id;
-                    $categoria_producto->id_categoria   = $categoriaId;
-                    $categoria_producto->save();
-                }
 
             } catch (Exception $e) {
                 return json_encode(array("error" => 1, "msg" => $e->getMessage()));
             }
 
+            //return back()->withInput();
             return json_encode(array('success' => true, "error" => 0, "msg" => "OK"));
         }
 
@@ -118,7 +163,7 @@ class ProductoController extends Controller
             'descripcion'   => 'min:5|max:100',
             'id'            => 'required',
         );
-       
+
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -126,22 +171,16 @@ class ProductoController extends Controller
         } else {
 
             try {
+
                 // update producto
                 $producto = Producto::find($request->id);
-                Producto::where('id', $request->id)->update(['nombre' => $request->nombre, 'descripcion' => $request->descripcion]);
-                ProductoCategoria::where('id_producto', $request->id)->delete();
-
-                foreach ($request->categorias as $categoriaId) {
-                    $categorias_producto = new ProductoCategoria;
-                    $categorias_producto->id_producto  = $request->id;
-                    $categorias_producto->id_categoria = $categoriaId;
-                    $categorias_producto->save();
-                }
+                Producto::where('id', $request->id)->update(['nombre' => $request->nombre, 'descripcion' => $request->descripcion,'categoria_id' => $request->categorias]);
 
             } catch (Exception $e) {
                 return json_encode(array("error" => 1, "msg" => $e->getMessage()));
             }
-            return json_encode(array('success' => true, "error" => 0, "msg" => "OK"));
+            //return json_encode(array('success' => true, "error" => 0, "msg" => "OK"));
+            return back()->withInput();
         }
     }
 
@@ -162,36 +201,25 @@ class ProductoController extends Controller
 
     public function listado()
     {
-       
-        $productos = Producto::select(
-            'productos.id','productos.nombre','productos.descripcion','categorias.nombre as nombre_categoria')
-            ->leftJoin('categorias','productos.categoria_id','=','categorias.id')
-            ->get();
-        
+        $productos = Producto::all();
         $categorias = Categoria::all();
-        $categorias_ = Categoria::where('subcategoria_id','=',0)                    
-                        ->orderBy('nombre')
-                        ->get();
 
-        return view( 'front.producto.index', [ 'productos' => $productos, 'categorias' => $categorias, 'categorias_' => $categorias_ ]);
+        $producto_completo = [];
+        foreach($productos as $producto){
+            $producto_categorias = ProductoCategoria::where('id_producto', $producto->id)->get();
+            foreach($producto_categorias as $producto_categoria){
+                $categoria = Categoria::find( $producto_categoria->id_categoria );
 
-    }
-    public function list($id)
-    {
-       
-        $productos = Producto::select(
-            'productos.id','productos.nombre','productos.descripcion','categorias.nombre as nombre_categoria')
-            ->leftJoin('categorias','productos.categoria_id','=','categorias.id')
-            ->where('productos.categoria_id',$id)
-            ->get();
-        //dd($productos);
-        $categorias = Categoria::all();
-        $categorias_ = Categoria::where('subcategoria_id','=',0)                    
-                        ->orderBy('nombre')
-                        ->get();
+            }
 
-        return view( 'front.producto.index', [ 'productos' => $productos, 'categorias' => $categorias, 'categorias_' => $categorias_ ]);
+            if (isset($categoria)) {
+                $producto['categoria'] = $categoria['nombre'];
+                $producto['categoriaId'] = $categoria['id'];
+                $producto_completo[] = $producto;
+            }
+        }
 
+        return view( 'front.producto.index', [ 'productos' => $producto_completo, 'categorias' => $categorias ]);
     }
 
 
@@ -200,17 +228,26 @@ class ProductoController extends Controller
      */
     public function detalle($id)
     {
-       $producto = Producto::select(
-            'productos.id','productos.nombre','productos.descripcion','categorias.nombre as nombre_categoria')
-            ->leftJoin('categorias','productos.categoria_id','=','categorias.id')
-            ->where('productos.id',$id)
-            ->first();
-        $categorias = Categoria::all();
-        $categorias_ = Categoria::where('subcategoria_id','=',0)                    
-                        ->orderBy('nombre')
-                        ->get();
-//dd($producto);
-        return view('front.producto.detail', ['producto' => $producto, 'categorias' => $categorias, 'categorias_' => $categorias_]);
-    }
+        $producto = Producto::find($id);
+        
+       
+        $categorias_producto = ProductoCategoria::where('id_producto', $id)->get();
 
+        $categorias = [];
+        foreach ($categorias_producto as $categoria_producto) {
+            if (isset($categoria_producto->id_categoria)) {
+                $categoria = Categoria::find($categoria_producto->id_categoria);
+
+                if (isset($categoria)) {
+                    $categorias[] = $categoria;
+                }
+            }
+        }
+
+        $producto->categorias = $categorias;
+
+        $categorias = Categoria::all();
+
+        return view('front.producto.detail', ['producto' => $producto, 'categorias' => $categorias]);
+    }
 }

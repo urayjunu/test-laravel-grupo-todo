@@ -27,12 +27,10 @@
                     <div class="portlet box blue">
                         <div class="portlet-body">
                             <div class="table-responsive">
-                                    <h4>Categoria {{ $producto->nombre }}:</h4>
-                                    <ul class="categorias">
-                                    @foreach($producto->categorias as $categoria)
-                                        <li> {{ $categoria['nombre'] }}</li>
-                                    @endforeach
-                                    </ul>
+                                    <label>Producto: {{ $producto->nombre }} </label><br>
+                                    <label>Categoria: {{ $producto->categorias }} </label>
+                                    <br>
+                                    <textarea cols="30" rows="4" disabled="" >{{ $producto->descripcion }}</textarea>
                             </div>
                         </div>
                     </div>

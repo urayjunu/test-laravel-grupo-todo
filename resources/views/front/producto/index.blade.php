@@ -1,10 +1,11 @@
-  @include('front.layouts.head_front')
+@extends('layouts.app')
+@section('content')
     <body>
         <div class="flex-center position-ref full-height">
             <div class="top-right links">
                 @include('front.layouts.menu_front')
             </div>
-
+<!--
             <div class="content menu-categorias">
                 <div class= "row">
                     <ul>
@@ -13,7 +14,7 @@
                         @endforeach
                     </ul>
                 </div>
-            </div>
+            </div>-->
 
             <div class="content">
 
@@ -65,7 +66,7 @@
                                                     </td>
                                                      <td>
                                                         <i class="fa fa-star"></i>
-                                                        <a href = "{{  url('front/categoria') }}/{{$producto->categoriaId }}" >{{ $producto->categoria }}</a>
+                                                        {{ $producto->nombre_categoria }}
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -77,4 +78,4 @@
                 </div>
             </div>
         </div>
-    @include('front.layouts.footer_front')
+@endsection

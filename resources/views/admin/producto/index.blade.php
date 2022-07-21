@@ -1,5 +1,6 @@
-  @include('admin.layouts.head_admin')
-    <body>
+@extends('layouts.app')
+@section('content')
+
         <div class="flex-center position-ref full-height">
 
             <div class="top-right links">
@@ -63,7 +64,7 @@
 
                                         </table>
                                         <!-- Trigger the modal with a button -->
-                                        <button type="button" class="btn btn-info btn-sd" data-toggle="modal" onclick="clearProducto();" data-target="#myModal" id="open">Add Producto</button>
+                                        <button type="button" class="btn btn-info btn-sd" data-toggle="modal" onclick="agregarProducto();" data-target="#myModal" id="open">Add Producto</button>
                                     </div>
                                 </div>
                             </div>
@@ -74,7 +75,7 @@
         <!-- MODDAL -->
 
         <div class="container">
-            <form method="post" action="{{ url('agregarProducto') }} id="form">
+            <form method="post" action="" id="form">
                     @csrf
             <!-- Modal -->
             <div class="modal" tabindex="-1" role="dialog" id="myModal">
@@ -82,8 +83,7 @@
                 <div class="modal-content">
                     <div class="alert alert-danger" style="display:none"></div>
                 <div class="modal-header">
-
-                    <h5 class="modal-title">Nuevo Producto</h5>
+                    <label id="titlea" class="modal-title"></label>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
@@ -105,9 +105,17 @@
                     <div class="row">
                         <div class="form-group col-md-10">
                             <label for="Categorias">Categorias:</label>
-                            <select class="form-control" name="categorias" id="categorias"  multiple required>
+                            <select class="selectpicker form-control" name="categorias" id="categorias" required>
                                 @foreach($categorias as $categoria)
-                                    <option value="{{ $categoria->id }}" >{{ $categoria->nombre }}</option>
+                                <optgroup label="{{ $categoria->nombre }}">
+                                    <option  value="{{ $categoria->id }}" >{{ $categoria->nombre }}</option>
+                                    @foreach($categorias_ as $categoria_) 
+                                        @if($categoria_->subcategoria_id == $categoria->id)
+                                        <option value="{{ $categoria_->id }}" 
+                                            >{{ $categoria_->nombre }}</option>
+                                        @endif                                       
+                                    @endforeach 
+                                </optgroup>
                                 @endforeach
                             </select>
                         </div>
@@ -129,9 +137,11 @@
                     jQuery('#nombre').val("");
                     jQuery('#descripcion').val("");
                     jQuery('#categorias').val("");
+                    jQuery('#titlea').text("");
+                    $('#form').attr('action', "");
             }
             function deleteProducto(id){
-                if(!confirm('Are you sure you want to delete this item?'))
+                if(!confirm('Esta seguro de eliminar el producto?'))
                     return false;
                 $.ajaxSetup({
                     headers: {
@@ -160,11 +170,14 @@
                             jQuery('.alert-danger').hide();
                             $('#open').hide();
                             $('#myModal').modal('hide');
+                            
                             location.reload();
                         }
+                        location.reload();
                 }});
             }
             function editProducto(id){
+                
                 jQuery.ajax({
                         url: "{{ url('/admin/productoPorId') }}/"+id,
                         method: 'get',
@@ -185,18 +198,23 @@
                             }
                             else
                             {
-
                                 jQuery('#id').val(obj.producto.id);
                                 jQuery('#nombre').val(obj.producto.nombre);
                                 jQuery('#descripcion').val(obj.producto.descripcion);
                                 jQuery('#categorias').val(obj.producto.categorias);
+                                $('#form').attr('action', "{{ url('/admin/actualizarProducto') }}");
+                                jQuery('#titlea').text('Modificar');
                                 $('#myModal').modal('show');
                             }
                         }
                     });
             }
 
-            $(document).ready(function(){
+            function agregarProducto(){
+                clearProducto();
+                jQuery('#titlea').text("Nuevo");
+                $('#form').attr('action', "{{ url('/admin/agregarProducto') }}");
+
                 jQuery('#ajaxSubmit').click(function(e){
 
                      var nombre =  jQuery('#nombre').val();
@@ -245,12 +263,12 @@
                                 jQuery('#nombre').val();
                                 jQuery('#descripcion').val();
                                 jQuery('#categorias').val();
+                                
                                 location.reload();
                             }
                         }
                     });
                 });
-            });
+            }
         </script>
-
-    @include('admin.layouts.footer_admin')
+@endsection
