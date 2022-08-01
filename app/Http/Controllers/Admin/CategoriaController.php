@@ -16,17 +16,42 @@ use App\Categoria;
 
 class CategoriaController extends Controller
 {
+    public $menuc = array();
+
     public function index()
     {
         //$categorias = Categoria::all();
+        $this->menuc = array();
 
         $categorias = Categoria::where('subcategoria_id','=',0)                    
                 ->orderBy('nombre')
                 ->get();
-       
         $categorias_ = Categoria::all();
+        $cate = array();
+        $idCate = array();
+        $menuCate = $this->crear_sub(0);
 
-        return view('admin.categoria.index', ['categorias' => $categorias,'categorias_' => $categorias_]);
+        return view('admin.categoria.index', ['categorias' => $categorias,'categorias_' => $categorias_
+            ,'menuCate' => $this->menuc]);
+
+    }
+
+    public function crear_sub($sub) 
+    { 
+       $consulta = Categoria::where('subcategoria_id','=',$sub)                    
+                ->orderBy('nombre')
+                ->get();
+       
+                   
+       foreach ($consulta as $row) {
+            $this->menuc[] = array(
+                                    'id'=> $row['id'],
+                                    'subcategoria_id'=> $row['subcategoria_id'],
+                                    'nombre'=> $row['nombre'],
+                                    'ruta'=> $row['ruta'],
+                                   );
+            $this->crear_sub($row['id']);
+       }
     }
 
     public function categoriaPorId($id)
@@ -47,18 +72,23 @@ class CategoriaController extends Controller
             'nombre'   => 'required|min:3jmn|max:50',
             'descripcion'   => 'min:2|max:150',
         );
-//dd($request);
+        $rta = "";
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return json_encode(array("error" => 1, "msg" => "Error al guardar"));
         } else {
             try {
+                if($request->categ <> 0){
+                    $ruta = Categoria::find($request->categ);
+                    $rta = $ruta->ruta.'/';
+                }
                 // store categoria
                 $categoria = new Categoria();
-                $categoria->nombre      = $request->nombre;
+                $categoria->nombre = $request->nombre;
                 $categoria->descripcion = $request->descripcion;
                 $categoria->subcategoria_id = $request->categ;
+                $categoria->ruta = $rta.$request->nombre;
                 $categoria->save();
 
             } catch (Exception $e) {
@@ -102,19 +132,27 @@ class CategoriaController extends Controller
             'nombre'   => 'required|min:5|max:50',
             'id'   => 'required',
         );
-
+        $rta = "";
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return json_encode(array("error" => 103, "msg" => "Error al guardar"));
         } else {
 
-            try {
-                // update categoria
-                Categoria::where('id', $request->id)->update(['nombre' => $request->nombre, 'descripcion' => $request->descripcion]);
-            } catch (Exception $e) {
-                return json_encode(array("error" => 102, "msg" => $e->getMessage()));
-            }
+                try {
+                    if($request->id <> 0){
+                        $ruta = Categoria::find($request->id);
+                        $rta = $ruta->ruta;
+                    }
+
+                    Categoria::where('id', $request->id)->update([
+                        'nombre' => $request->nombre, 
+                        'descripcion' => $request->descripcion,
+                        'ruta' => $rta,
+                    ]);
+                } catch (Exception $e) {
+                    return json_encode(array("error" => 102, "msg" => $e->getMessage()));
+                }
 
             return json_encode(array('success' => true, "error" => 0, "msg" => "OK"));
         }

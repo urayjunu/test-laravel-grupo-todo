@@ -2,7 +2,7 @@
 @section('content')
 
         <div class="flex-center position-ref full-height">
-
+            
             <div class="top-right links">
                 @include('admin.layouts.menu_admin')
             </div>
@@ -106,17 +106,17 @@
                         <div class="form-group col-md-10">
                             <label for="Categorias">Categorias:</label>
                             <select class="selectpicker form-control" name="categ" id="categ">
-                                <option value="0" selected>Selecione</option>
-                                @foreach($categorias as $categoria)
-                                <optgroup label="{{ $categoria->nombre }}">
-                                    <option  value="{{ $categoria->id }}" >{{ $categoria->nombre }}</option>
-                                    @foreach($categorias_ as $categoria_) 
-                                        @if($categoria_->subcategoria_id == $categoria->id)
-                                        <option value="{{ $categoria_->id }}" 
-                                            >{{ $categoria_->nombre }}</option>
-                                        @endif                                       
-                                    @endforeach 
-                                </optgroup>
+                                <option value="0" selected>Ninguno</option>
+                                @foreach($menuCate as $categoria)
+                                    @if($categoria['subcategoria_id'] >= 0 )   
+                                    <optgroup label="{{ $categoria['ruta'] }}" >
+                                        @if($categoria['subcategoria_id'] >= 0 )
+                                        <option  value="{{ $categoria['id'] }}" >{{ $categoria['nombre'] }}</option>
+                                        @endif
+                                    @endif
+                                    @if($categoria['subcategoria_id'] >= 0)   
+                                    </optgroup>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>
@@ -133,13 +133,15 @@
         </div>
         <!-- /Attachment Modal -->
         <script>
+
             function clearCategoria(){
-                    jQuery('#id').val("");
-                    jQuery('#nombre').val("");
-                    jQuery('#descripcion').val("");
-                    jQuery('#categorias').val("");
-                    jQuery('#titlea').text("");
-                    $('#form').attr('action', "");
+                jQuery('#id').val("");
+                jQuery('#nombre').val("");
+                jQuery('#descripcion').val("");
+                jQuery('#categorias').val("");
+                jQuery('#titlea').text("");
+                $('#form').attr('action', "");
+                $("#categ").val("");
             }
             function deleteCategoria(id){
                 if(!confirm('Esta seguro de eliminar la categoria?'))
@@ -199,6 +201,7 @@
                             }
                             else
                             {
+                                $("#categ").val(id);
                                 jQuery('#id').val(obj.categoria.id);
                                 jQuery('#nombre').val(obj.categoria.nombre);
                                 jQuery('#descripcion').val(obj.categoria.descripcion);

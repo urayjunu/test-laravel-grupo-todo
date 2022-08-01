@@ -17,6 +17,7 @@ class CreateCategoriasTable extends Migration
             $table->bigIncrements('id');
             $table->integer('subcategoria_id');
             $table->string('nombre');
+            $table->string('ruta');
             $table->string('descripcion')->nullable();
             $table->timestamp('updated_at')->useCurrent();
             $table->timestamp('created_at')->useCurrent();
@@ -26,15 +27,14 @@ class CreateCategoriasTable extends Migration
             ->insert([
                 "subcategoria_id" => 0,
                 "nombre" => "Autos",
-                "descripcion" => "Autos 0 km"
-               
+                "ruta" => "Autos",
+                "descripcion" => "Autos 0 km",
                 ],[
                 "subcategoria_id" => 0,
                 "nombre" => "Motos",
-                "descripcion" => "Motos 0 km"
-               
+                "ruta" => "Motos",
+                "descripcion" => "Motos 0 km",
                 ]
-
             );
     }
 
